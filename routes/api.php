@@ -40,8 +40,9 @@ Route::middleware('jwt')->group(function(){
         Route::get('cards', [UserController::class, 'cards']);
         Route::get('me', [UserController::class, 'getUser']);
         Route::post('create', [UserController::class, 'create']);
-        Route::patch('{id}', [UserController::class, 'update']);
+        Route::patch('{id}', [UserController::class, 'update']);        
         Route::post('block/{id}', [UserController::class, 'userBlock']);
+        Route::delete('{id}', [UserController::class, 'delete']);
     });
 
     Route::prefix('client')->group(function(){

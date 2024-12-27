@@ -92,7 +92,6 @@ class UserService
     public function create($request)
     {
         try {
-            $request['photo'] = $request['photo'] == 'null' ? null : $request['photo'];
             $request['is_active'] = $request['is_active'] == 'false' ? false : true;
             
             $rules = [
@@ -101,9 +100,8 @@ class UserService
                 'phone' => 'nullable|string',
                 'cpf_cnpj' => 'nullable|string',
                 'birth_date' => 'nullable|date',
-                'is_active' => 'nullable|boolean|default:true',
-                'role' => 'nullable|in:Admin,Manager,User',
-                'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'is_active' => 'nullable|boolean',
+                'role' => 'nullable|in:Admin,Manager',
             ];
     
             $password = str_shuffle(Str::upper(Str::random(1)) . rand(0, 9) . Str::random(1, '?!@#$%^&*') . Str::random(5));
@@ -115,12 +113,6 @@ class UserService
     
             if ($validator->fails()) {
                 return ['status' => false, 'error' => $validator->errors(), 'statusCode' => 400];
-            }
-    
-            if ($request->hasFile('photo')) {
-                $path = $request->file('photo')->store('photos', 'public');
-                $fullPath = asset('storage/' . $path);
-                $requestData['photo'] = $fullPath;
             }
     
             $user = User::create($requestData);
@@ -142,13 +134,12 @@ class UserService
 
             $rules = [
                 'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
+                'email' => 'required|string|email|max:255',
                 'phone' => 'nullable|string',
                 'cpf_cnpj' => 'nullable|string',
                 'birth_date' => 'nullable|date',
-                'is_active' => 'nullable|boolean|default:true',
-                'role' => 'nullable|in:Admin,Manager,User',
-                'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'is_active' => 'nullable|boolean',
+                'role' => 'nullable|in:Admin,Manager',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -160,12 +151,6 @@ class UserService
             if(!isset($userToUpdate)) throw new Exception('Usuário não encontrado');
 
             $requestData = $validator->validated();
-
-            if ($request->hasFile('photo')) {
-                $path = $request->file('photo')->store('photos', 'public');
-                $fullPath = asset('storage/' . $path);
-                $requestData['photo'] = $fullPath;
-            }
 
             $userToUpdate->update($requestData);
 
@@ -186,6 +171,22 @@ class UserService
             $user->save();
 
             return ['status' => true, 'data' => $user];
+        } catch (Exception $error) {
+            return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
+        }
+    }
+
+    public function delete($user_id)
+    {
+        try {
+            $user = User::find($user_id);
+
+            if (!$user) throw new Exception('Usuário não encontrado');
+
+            $userName = $user->name;
+            $user->delete();
+
+            return ['status' => true, 'data' => $userName];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
