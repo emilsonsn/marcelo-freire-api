@@ -25,7 +25,6 @@ class UserSeed extends Seeder
             'cpf_cnpj' => '13754674412',
             'birth_date' => '2001-12-18',
             'is_active' => true,
-            'is_admin' => true,
         ]);
     }
 }
