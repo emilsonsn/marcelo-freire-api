@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Client extends Model
+class UserService extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -14,14 +14,18 @@ class Client extends Model
     const UPDATED_AT = 'updated_at';
     const DELETED_AT = 'deleted_at';
 
-    public $table = 'clients';
-
     protected $fillable = [
-        'name',
-        'cpf_cnpj',
-        'phone',
-        'email',
-        'is_active',
+        'user_id',
+        'service_id',
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function service()
+    {
+        return $this->belongsTo(Service::class);
+    }
 }

@@ -17,12 +17,6 @@ return new class extends Migration
             $table->string('cpf_cnpj')->unique();
             $table->string('phone');
             $table->string('email')->unique();
-            $table->string('cep');
-            $table->string('address');
-            $table->string('number');
-            $table->string('city');
-            $table->string('state');
-            $table->string('complement');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();

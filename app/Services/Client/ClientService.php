@@ -40,12 +40,6 @@ class ClientService
                 'email' => 'required|string|max:255',
                 'cpf_cnpj' => 'required|string|max:255',
                 'phone' => 'required|string|max:255',
-                'cep' => 'required|string|max:255',
-                'address' => 'required|string|max:255',
-                'city' => 'required|string|max:255',
-                'number' => 'required|string|max:255',
-                'state' => 'required|string|max:255',
-                'complement' => 'nullable|string|max:255',
                 'is_active' => 'nullable|boolean|max:255',
             ];
 
@@ -73,12 +67,6 @@ class ClientService
                 'email' => 'required|string|max:255',
                 'cpf_cnpj' => 'required|string|max:255',
                 'phone' => 'required|string|max:255',
-                'cep' => 'required|string|max:255',
-                'address' => 'required|string|max:255',
-                'city' => 'required|string|max:255',
-                'number' => 'required|string|max:255',
-                'state' => 'required|string|max:255',
-                'complement' => 'nullable|string|max:255',
                 'is_active' => 'nullable|boolean|max:255',
             ];
 
