@@ -14,7 +14,8 @@ class ServiceService
             $perPage = $request->input('take', 10);
             $search_term = $request->search_term;
 
-            $services = Service::orderBy('id', 'desc');
+            $services = Service::with('users', 'client')
+                ->orderBy('id', 'desc');
 
             if (isset($search_term)) {
                 $services->where('title', 'LIKE', "%{$search_term}%")
