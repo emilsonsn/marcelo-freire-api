@@ -54,7 +54,8 @@ class ServiceService
             $service = Service::create($validator->validated());
 
             if($request->filled('users')){
-                $service->users()->sync($request->users);
+                $users = explode(',', $request->users);
+                $service->users()->sync($users);
             }
 
             return ['status' => true, 'data' => $service];
