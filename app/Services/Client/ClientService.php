@@ -37,12 +37,14 @@ class ClientService
         try {
             $rules = [
                 'name' => 'required|string|max:255',
+                'surname' => 'nullable|string|max:255',
                 'email' => 'required|string|max:255',
+                'url' => 'nullable|string|max:255',
+                'gender' => 'nullable|in:Male,Female',
                 'cpf_cnpj' => 'required|string|max:255',
                 'phone' => 'required|string|max:255',
                 'is_active' => 'nullable|boolean|max:255',
             ];
-
 
             $validator = Validator::make($request->all(), $rules);
 
@@ -58,13 +60,15 @@ class ClientService
         }
     }
 
-
     public function update($request, $user_id)
     {
         try {
             $rules = [
                 'name' => 'required|string|max:255',
+                'surname' => 'nullable|string|max:255',
                 'email' => 'required|string|max:255',
+                'url' => 'nullable|string|max:255',
+                'gender' => 'nullable|in:Male,Female',
                 'cpf_cnpj' => 'required|string|max:255',
                 'phone' => 'required|string|max:255',
                 'is_active' => 'nullable|boolean|max:255',

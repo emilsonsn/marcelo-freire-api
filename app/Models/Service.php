@@ -33,6 +33,6 @@ class Service extends Model
 
     public function midias()
     {
-        return $this->hasMany(Midia::class);
+        return $this->hasMany(Midea::class);
     }
 }
