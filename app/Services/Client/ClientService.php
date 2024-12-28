@@ -9,6 +9,23 @@ use Illuminate\Support\Facades\Validator;
 class ClientService
 {
 
+    public function all()
+    {
+        try {
+            
+            $clients = Client::orderBy('id', 'desc')
+                ->get();
+
+            return [
+                'status' => true,
+                'data'   => $clients
+            ];
+        } catch (Exception $error) {
+            return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
+        }
+    }
+
+
     public function search($request)
     {
         try {

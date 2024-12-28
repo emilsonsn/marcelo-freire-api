@@ -19,6 +19,12 @@ class ClientController extends Controller
         return $result;
     }
 
+    public function all(){
+        $result = $this->clientService->all();
+
+        return $this->response($result);
+    }
+
     public function create(Request $request){
         $result = $this->clientService->create($request);
 
