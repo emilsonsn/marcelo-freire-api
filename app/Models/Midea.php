@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Midia extends Model
+class Midea extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -20,6 +20,10 @@ class Midia extends Model
         'description',
         'path',
     ];
+
+    public function getPathAttribute($value){
+        return $value ? asset('storage/' . $value) : null;
+    }
 
     public function user()
     {
