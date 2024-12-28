@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\MideaController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminMiddleware;
 
@@ -45,10 +47,24 @@ Route::middleware('jwt')->group(function(){
         Route::delete('{id}', [UserController::class, 'delete']);
     });
 
+    Route::prefix('service')->group(function(){
+        Route::get('search', [ServiceController::class, 'search']);
+        Route::post('create', [ServiceController::class, 'create']);
+        Route::patch('{id}', [ServiceController::class, 'update']);
+        Route::delete('{id}', [ServiceController::class, 'delete']);
+    });
+
     Route::prefix('client')->group(function(){
         Route::get('search', [ClientController::class, 'search']);
         Route::post('create', [ClientController::class, 'create']);
         Route::patch('{id}', [ClientController::class, 'update']);
         Route::delete('{id}', [ClientController::class, 'delete']);
     });
+
+    Route::prefix('midea')->group(function(){
+        Route::get('search', [MideaController::class, 'search']);
+        Route::post('create', [MideaController::class, 'create']);
+        Route::patch('{id}', [MideaController::class, 'update']);
+        Route::delete('{id}', [MideaController::class, 'delete']);
+    });        
 });
