@@ -39,7 +39,7 @@ class ServiceService
             $rules = [
                 'client_id' => 'required|exists:clients,id',
                 'title' => 'required|string|max:255',
-                'status' => 'required|in:Pending,Deliver',
+                'status' => 'nullable|in:Pending,Deliver',
                 'description' => 'nullable|string',
                 'users' => 'nullable|array',
                 'users.*' => 'exists:users,id',
@@ -54,8 +54,7 @@ class ServiceService
             $service = Service::create($validator->validated());
 
             if($request->filled('users')){
-                $users = explode(',', $request->users);
-                $service->users()->sync($users);
+                $service->users()->sync($request->users);
             }
 
             return ['status' => true, 'data' => $service];
@@ -70,7 +69,7 @@ class ServiceService
             $rules = [
                 'client_id' => 'required|exists:clients,id',
                 'title' => 'required|string|max:255',
-                'status' => 'required|in:Pending,Deliver',
+                'status' => 'nullable|in:Pending,Deliver',
                 'description' => 'nullable|string',
                 'users' => 'nullable|array',
                 'users.*' => 'exists:users,id',
