@@ -20,10 +20,23 @@ class MideaController extends Controller
         return $result;
     }
 
+    public function getByCode($code){
+        $result = $this->mideaService->getByCode($code);
+
+        return $this->response($result);
+    }
+
     public function create(Request $request){
         $result = $this->mideaService->create($request);
 
         if($result['status']) $result['message'] = "Mídia criada com sucesso";
+        return $this->response($result);
+    }
+
+    public function addComment(Request $request){
+        $result = $this->mideaService->addComment($request);
+
+        if($result['status']) $result['message'] = "Comentário adicionado com sucesso";
         return $this->response($result);
     }
 

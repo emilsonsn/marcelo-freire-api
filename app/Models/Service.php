@@ -25,11 +25,12 @@ class Service extends Model
     {
         return $this->belongsTo(Client::class);
     }
-
+    
     public function users()
     {
-        return $this->belongsToMany(UserService::class);
+        return $this->belongsToMany(User::class, 'user_services', 'service_id', 'user_id');
     }
+    
 
     public function midias()
     {

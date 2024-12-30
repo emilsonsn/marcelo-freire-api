@@ -29,6 +29,11 @@ Route::post('updatePassword', [UserController::class, 'updatePassword']);
 
 Route::get('validateToken', [AuthController::class, 'validateToken']);
 
+Route::prefix('midea')->group(function(){
+    Route::get('code/{code}', [MideaController::class, 'getByCode']);
+    Route::post('add-comment', [MideaController::class, 'addComment']);
+});
+
 Route::middleware('jwt')->group(function(){
 
     Route::middleware(AdminMiddleware::class)->group(function() {
@@ -68,7 +73,7 @@ Route::middleware('jwt')->group(function(){
         Route::delete('{id}', [ClientController::class, 'delete']);
     });
 
-    Route::prefix('midea')->group(function(){
+    Route::prefix('midea')->group(function(){                
         Route::get('search', [MideaController::class, 'search']);
         Route::post('create', [MideaController::class, 'create']);
         Route::patch('{id}', [MideaController::class, 'update']);

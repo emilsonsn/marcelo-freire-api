@@ -2,9 +2,15 @@
 
 namespace App\Services\Midea;
 
+use App\Mail\CommentMail;
+use App\Models\Comment;
 use App\Models\Midea;
+use App\Models\ServiceCode;
+use App\Models\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class MideaService
@@ -16,20 +22,44 @@ class MideaService
             $search_term = $request->search_term;
             $service_id = $request->service_id ?? null;
 
-            $midias = Midea::with('user')
+            $mideas = Midea::with('user', 'comments')
                 ->orderBy('id', 'desc');
 
             if (isset($search_term)) {
-                $midias->where('description', 'LIKE', "%{$search_term}%");
+                $mideas->where('description', 'LIKE', "%{$search_term}%");
             }
 
             if(isset($service_id)){
-                $midias->where('service_id', $service_id);
+                $mideas->where('service_id', $service_id);
             }
 
-            $midias = $midias->paginate($perPage);
+            $mideas = $mideas->paginate($perPage);
 
-            return $midias;
+            return $mideas;
+        } catch (Exception $error) {
+            return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
+        }
+    }
+
+    public function getByCode($code){
+        try {
+
+            $serviceCode = ServiceCode::where('code', $code)
+                ->whereBetween('created_at', [Carbon::now()->subDay(7), Carbon::now()])
+                ->first();
+
+            if(!isset($serviceCode)){
+                throw new Exception('Código inválido ou expirado');
+            }
+
+            $mideas = Midea::with('comments')->where('service_id', $serviceCode->service_id)
+                ->get();  
+
+            return [
+                'status' => true,
+                'data' => $mideas
+            ];
+
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
@@ -64,11 +94,54 @@ class MideaService
                 $mideas[] = Midea::create($data);
             }            
         
-            return ['status' => true, 'data' => $mideas];
+            return [
+                'status' => true,
+                'data' => $mideas
+            ];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
     }
+
+    public function addComment($request)
+    {
+        try {
+            $rules = [                
+                'midea_id' => ['required', 'integer', 'exists:mideas,id'],
+                'comment' => ['nullable', 'string'],                
+            ];
+
+            $requestData = $request->all();
+    
+            $validator = Validator::make($requestData, $rules);
+    
+            if ($validator->fails()) {
+                return ['status' => false, 'error' => $validator->errors(), 'statusCode' => 400];
+            }            
+    
+            $data = $validator->validated();
+            
+            $comment = Comment::create($data);
+
+            $client = $comment->midea->service->client;
+
+            $admin = User::where('role', 'Admin')
+                ->first();
+
+            Mail::to($admin->email)
+            ->send(new CommentMail(
+                $client->name,
+                $comment->comment
+            ));
+        
+            return [
+                'status' => true,
+                'data' => $comment
+            ];
+        } catch (Exception $error) {
+            return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
+        }
+    }    
     
     public function update($request, $midia_id)
     {

@@ -99,7 +99,7 @@ class ServiceService
                     'code' => str_pad(random_int(0, 99999), 5, '0', STR_PAD_LEFT),
                 ]);
 
-                $client = $serviceToUpdate->client;                
+                $client = $serviceToUpdate->client;                            
 
                 Mail::to($client->email)
                     ->send(new ServiceDeliverMail(
@@ -110,10 +110,8 @@ class ServiceService
     
             $serviceToUpdate->update($validator->validated());
     
-            if ($request->has('users')) {
-                $serviceToUpdate
-                    ->users()
-                    ->sync($request->users);
+            if($request->filled('users')){
+                $serviceToUpdate->users()->sync($request->users);
             }
     
             return ['status' => true, 'data' => $serviceToUpdate];
