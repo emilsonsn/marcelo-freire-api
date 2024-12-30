@@ -26,6 +26,12 @@ class MideaController extends Controller
         return $this->response($result);
     }
 
+    public function download($code){
+        $result = $this->mideaService->download($code);
+
+        return $result;
+    }    
+
     public function create(Request $request){
         $result = $this->mideaService->create($request);
 

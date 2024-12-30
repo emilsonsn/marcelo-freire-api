@@ -65,6 +65,55 @@ class MideaService
         }
     }
 
+    public function download($code){
+        try {
+
+            $serviceCode = ServiceCode::where('code', $code)
+                ->whereBetween('created_at', [Carbon::now()->subDay(7), Carbon::now()])
+                ->first();
+
+            if(!isset($serviceCode)){
+                throw new Exception('Código inválido ou expirado');
+            }
+
+            $mideas = Midea::where('service_id', $serviceCode->service_id)
+                ->get();  
+
+            if ($mideas->isEmpty()) {
+                throw new Exception('Nenhuma mídia encontrada para o serviço');
+            }
+
+            $zipFileName = 'mideas-' . now()->format('Y-m-d-H-i-s') . '.zip';
+
+            $tempPath = storage_path('app/public/temp/' . $zipFileName);
+
+            if (!file_exists(storage_path('app/public/temp'))) {
+                mkdir(storage_path('app/public/temp'), 0777, true);
+            }
+
+            $zip = new \ZipArchive();
+            if ($zip->open($tempPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+                throw new Exception('Não foi possível criar o arquivo ZIP');
+            }
+
+            foreach ($mideas as $midea) {
+                $filePath = public_path(parse_url($midea->path, PHP_URL_PATH));
+                if (file_exists($filePath)) {
+                    $zip->addFile($filePath, basename($filePath));
+                } else {
+                    throw new Exception("Arquivo não encontrado: {$midea->path}");
+                }
+            }
+            
+            $zip->close();
+            
+            return response()->download($tempPath, $zipFileName)->deleteFileAfterSend(true);
+
+        } catch (Exception $error) {
+            return response()->json(['status' => false, 'error' => $error->getMessage()], 400);
+        }
+    }
+
     public function create($request)
     {
         try {

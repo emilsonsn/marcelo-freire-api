@@ -32,6 +32,7 @@ Route::get('validateToken', [AuthController::class, 'validateToken']);
 Route::prefix('midea')->group(function(){
     Route::get('code/{code}', [MideaController::class, 'getByCode']);
     Route::post('add-comment', [MideaController::class, 'addComment']);
+    Route::get('download/{code}', [MideaController::class, 'download']);
 });
 
 Route::middleware('jwt')->group(function(){
