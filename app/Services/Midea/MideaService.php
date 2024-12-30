@@ -14,11 +14,17 @@ class MideaService
         try {
             $perPage = $request->input('take', 10);
             $search_term = $request->search_term;
+            $service_id = $request->service_id ?? null;
 
-            $midias = Midea::orderBy('id', 'desc');
+            $midias = Midea::with('user')
+                ->orderBy('id', 'desc');
 
             if (isset($search_term)) {
                 $midias->where('description', 'LIKE', "%{$search_term}%");
+            }
+
+            if(isset($service_id)){
+                $midias->where('service_id', $service_id);
             }
 
             $midias = $midias->paginate($perPage);
@@ -35,10 +41,13 @@ class MideaService
             $rules = [                
                 'service_id' => ['required', 'integer', 'exists:services,id'],
                 'description' => ['nullable', 'string'],
-                'midia' => ['required', 'file'],
+                'mideas' => ['required', 'array'],
+                'mideas.*' => ['file']
             ];
+
+            $requestData = $request->all();
     
-            $validator = Validator::make($request->all(), $rules);
+            $validator = Validator::make($requestData, $rules);
     
             if ($validator->fails()) {
                 return ['status' => false, 'error' => $validator->errors(), 'statusCode' => 400];
@@ -46,17 +55,16 @@ class MideaService
     
             $data = $validator->validated();
             $data['user_id'] = Auth::user()->id;
-    
-            if ($request->hasFile('midia')) {
-                $path = $request->file('midia')->store('public/midias');
+
+            $mideas = [];
+            foreach($request->mideas as $midia){                
+                $path = $midia->store('public/midias');
                 $data['path'] = str_replace('public/', '', $path);
-            } else {
-                throw new Exception('Falha ao salvar o arquivo de mídia.');
-            }
-    
-            $midia = Midea::create($data);
-    
-            return ['status' => true, 'data' => $midia];
+
+                $mideas[] = Midea::create($data);
+            }            
+        
+            return ['status' => true, 'data' => $mideas];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }

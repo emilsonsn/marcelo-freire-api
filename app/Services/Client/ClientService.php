@@ -60,7 +60,7 @@ class ClientService
                 'gender' => 'nullable|in:Male,Female',
                 'cpf_cnpj' => 'required|string|max:255',
                 'phone' => 'required|string|max:255',
-                'is_active' => 'nullable|boolean|max:255',
+                'is_active' => 'nullable|boolean',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -69,7 +69,11 @@ class ClientService
                 return ['status' => false, 'error' => $validator->errors(), 'statusCode' => 400];;
             }
 
-            $client = Client::create($validator->validated());
+            $data = $validator->validated();
+
+            $data['is_active'] = $data['is_active'] ? true : false;
+
+            $client = Client::create($data);
 
             return ['status' => true, 'data' => $client];
         } catch (Exception $error) {

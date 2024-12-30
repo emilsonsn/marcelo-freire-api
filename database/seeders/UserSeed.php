@@ -14,7 +14,7 @@ class UserSeed extends Seeder
     public function run(): void
     {
         
-        User::firstOrCreate([
+        User::updateOrCreate([
             'email' => 'admin@admin',
         ],
         [
@@ -25,6 +25,7 @@ class UserSeed extends Seeder
             'cpf_cnpj' => '13754674412',
             'birth_date' => '2001-12-18',
             'is_active' => true,
+            'role' => 'Admin'
         ]);
     }
 }

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MideaController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
@@ -35,6 +36,11 @@ Route::middleware('jwt')->group(function(){
     });
 
     Route::post('logout', [AuthController::class, 'logout']);
+
+    Route::prefix('dashboard')->group(function(){
+        Route::get('cards', [DashboardController::class, 'cards']);
+        Route::get('graphic', [DashboardController::class, 'graphic']);
+    });
 
     Route::prefix('user')->group(function(){
         Route::get('all', [UserController::class, 'all']);

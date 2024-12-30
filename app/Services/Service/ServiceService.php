@@ -2,8 +2,11 @@
 
 namespace App\Services\Service;
 
+use App\Mail\ServiceDeliverMail;
 use App\Models\Service;
+use App\Models\ServiceCode;
 use Exception;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class ServiceService
@@ -18,8 +21,14 @@ class ServiceService
                 ->orderBy('id', 'desc');
 
             if (isset($search_term)) {
-                $services->where('title', 'LIKE', "%{$search_term}%")
-                    ->orWhere('description', 'LIKE', "%{$search_term}%");
+                $services->where(function ($query) use ($search_term) {
+                    $query->where('title', 'LIKE', "%{$search_term}%")
+                        ->orWhere('description', 'LIKE', "%{$search_term}%")
+                        ->orWhereHas('client', function ($query2) use ($search_term) {
+                            $query2->where('name', 'LIKE', "%{$search_term}%");
+                        });
+
+                });
             }
 
             if($request->filled('status')){
@@ -83,6 +92,21 @@ class ServiceService
             $serviceToUpdate = Service::find($service_id);
     
             if (!isset($serviceToUpdate)) throw new Exception('Serviço não encontrado');
+
+            if($request->filled('status') && $request->status === 'Deliver'){
+                $serviceCode = ServiceCode::create([
+                    'service_id' => $serviceToUpdate->id,
+                    'code' => str_pad(random_int(0, 99999), 5, '0', STR_PAD_LEFT),
+                ]);
+
+                $client = $serviceToUpdate->client;                
+
+                Mail::to($client->email)
+                    ->send(new ServiceDeliverMail(
+                        $client->name,
+                        $serviceCode->code
+                    ));
+            }
     
             $serviceToUpdate->update($validator->validated());
     
