@@ -28,7 +28,7 @@ class Service extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'user_services');
+        return $this->belongsToMany(UserService::class);
     }
 
     public function midias()
