@@ -65,10 +65,38 @@ class MideaService
         }
     }
 
+    public function downloadOne($midea_id){
+        try {
+            $midea = Midea::find($midea_id);
+    
+            if(!isset($midea)){
+                throw new Exception('Mídia não encontrada');
+            }
+            
+            $path = explode('storage/', $midea->path)[1];
+    
+            $filePath = storage_path('app/public/' . $path);
+    
+            if (!file_exists($filePath)) {
+                throw new Exception('Arquivo não encontrado no servidor');
+            }
+    
+            $fileName = basename($filePath);
+    
+            return response()->download($filePath, $fileName)->deleteFileAfterSend(false);
+    
+        } catch (Exception $error) {
+            return response()->json(['status' => false, 'error' => $error->getMessage()], 400);
+        }
+    }
+    
     public function download($code){
         try {
 
-            $serviceCode = ServiceCode::where('code', $code)
+            $serviceCode = ServiceCode::where(function($query) use($code) {
+                    $query->where('code', $code)
+                        ->orWhere('service_id', $code);
+                })
                 ->whereBetween('created_at', [Carbon::now()->subDay(7), Carbon::now()])
                 ->first();
 

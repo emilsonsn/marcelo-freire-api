@@ -76,6 +76,7 @@ Route::middleware('jwt')->group(function(){
 
     Route::prefix('midea')->group(function(){                
         Route::get('search', [MideaController::class, 'search']);
+        Route::get('download-one/{midea_id}', [MideaController::class, 'downloadOne']);
         Route::post('create', [MideaController::class, 'create']);
         Route::patch('{id}', [MideaController::class, 'update']);
         Route::delete('{id}', [MideaController::class, 'delete']);
