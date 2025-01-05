@@ -5,6 +5,7 @@ namespace App\Services\Midea;
 use App\Mail\CommentMail;
 use App\Models\Comment;
 use App\Models\Midea;
+use App\Models\Service;
 use App\Models\ServiceCode;
 use App\Models\User;
 use Carbon\Carbon;
@@ -99,12 +100,16 @@ class MideaService
                 })
                 ->whereBetween('created_at', [Carbon::now()->subDay(7), Carbon::now()])
                 ->first();
+            
+            $service = Service::find($code);
 
-            if(!isset($serviceCode)){
+            if(!isset($serviceCode) && !isset($service)){
                 throw new Exception('Código inválido ou expirado');
             }
 
-            $mideas = Midea::where('service_id', $serviceCode->service_id)
+            $service_id = $serviceCode->service_id ?? $service->id;
+
+            $mideas = Midea::where('service_id', $service_id)
                 ->get();  
 
             if ($mideas->isEmpty()) {

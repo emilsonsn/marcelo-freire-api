@@ -71,7 +71,7 @@
             </span>
         </p>
         <p>
-            <a href="{{ env('FRONT_URL') . '/login' }}">Ter acesso aos meus arquivos</a>
+            <a href="{{ env('FRONT_URL') . '/mideas' }}">Ter acesso aos meus arquivos</a>
         </p>
         <div class="footer">
             <p>© {{ date('Y') }} {{ env('APP_NAME') }}. Todos os direitos reservados.</p>
