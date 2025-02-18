@@ -33,7 +33,7 @@ class UserService
             $perPage = $request->input('take', 10);
             $search_term = $request->search_term;
 
-            $users = User::query();
+            $users = User::where('role', "!=", 'Admin');
 
             if(isset($search_term)){
                 $users->where('name', 'LIKE', "%{$search_term}%")
