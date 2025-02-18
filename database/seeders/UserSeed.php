@@ -13,12 +13,13 @@ class UserSeed extends Seeder
      */
     public function run(): void
     {
-
-        $user = User::where('email', 'admin@admin')
-            ->first();
         
-        $user->update([
+        User::updateOrCreate([
+            'email' => 'admin@admin',
+        ],
+        [
             'name' => 'Admin',
+            'email' => 'admin@admin',
             'password' => Hash::make('admin'),
             'phone' => '83991236636',
             'cpf_cnpj' => '13754674412',
