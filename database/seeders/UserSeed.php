@@ -13,11 +13,11 @@ class UserSeed extends Seeder
      */
     public function run(): void
     {
+
+        $user = User::where('email', 'admin@admin')
+            ->first();
         
-        User::updateOrCreate([
-            'email' => 'admin@admin',
-        ],
-        [
+        $user->update([
             'name' => 'Admin',
             'password' => Hash::make('admin'),
             'phone' => '83991236636',
