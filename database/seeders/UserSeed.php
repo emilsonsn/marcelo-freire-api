@@ -19,7 +19,6 @@ class UserSeed extends Seeder
         ],
         [
             'name' => 'Admin',
-            'email' => 'admin@admin',
             'password' => Hash::make('admin'),
             'phone' => '83991236636',
             'cpf_cnpj' => '13754674412',
