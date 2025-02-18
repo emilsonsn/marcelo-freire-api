@@ -100,6 +100,7 @@ class UserService
                 'phone' => 'nullable|string',
                 'cpf_cnpj' => 'nullable|string',
                 'birth_date' => 'nullable|date',
+                'function' => 'nullable|string',
                 'is_active' => 'nullable|boolean',
                 'role' => 'nullable|in:Admin,Manager',
             ];
@@ -138,6 +139,7 @@ class UserService
                 'phone' => 'nullable|string',
                 'cpf_cnpj' => 'nullable|string',
                 'birth_date' => 'nullable|date',
+                'function' => 'nullable|string',
                 'is_active' => 'nullable|boolean',
                 'role' => 'nullable|in:Admin,Manager',
             ];

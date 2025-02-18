@@ -31,6 +31,7 @@ class User extends Authenticatable implements JWTSubject
         'cpf_cnpj',
         'phone',
         'birth_date',
+        'function',
         'photo',
         'password',
         'is_active',
