@@ -19,12 +19,13 @@ class MideaService
     public function search($request)
     {
         try {
-            $perPage = $request->input('take', 10);
+            $perPage = $request->input('take', 100);
             $search_term = $request->search_term;
-            $service_id = $request->service_id ?? null;
+            $order_by = $request->order_by ?? 'id';
+            $order = $request->order ?? 'DESC';
 
             $mideas = Midea::with('user', 'comments')
-                ->orderBy('id', 'desc');
+                ->orderBy($order_by, $order);
 
             if (isset($search_term)) {
                 $mideas->where('description', 'LIKE', "%{$search_term}%");
