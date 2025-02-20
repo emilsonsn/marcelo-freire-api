@@ -15,7 +15,7 @@ return new class extends Migration
             $table->date('birth_date')->nullable()->change();
             $table->string('cpf_cnpj')->nullable()->change();
             $table->string('phone')->nullable()->change();
-            $table->string('function')->nullable()->after('cpf_cnpj');
+            // $table->string('function')->nullable()->after('cpf_cnpj');
         });
     }
 
