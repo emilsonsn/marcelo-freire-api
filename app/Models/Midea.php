@@ -17,11 +17,16 @@ class Midea extends Model
     protected $fillable = [
         'user_id',
         'service_id',
+        'parent_id',
         'description',
         'path',
+        'type',
+        'media_type',
+        'size',
     ];
 
-    public function getPathAttribute($value){
+    public function getPathAttribute($value)
+    {
         return $value ? asset('storage/' . $value) : null;
     }
 
@@ -35,7 +40,18 @@ class Midea extends Model
         return $this->belongsTo(Service::class);
     }
 
-    public function comments(){
+    public function comments()
+    {
         return $this->hasMany(Comment::class)->orderBy('id', 'desc');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Midea::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Midea::class, 'parent_id')->orderBy('type')->orderBy('name');
     }
 }
