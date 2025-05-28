@@ -79,18 +79,54 @@ class MideaService
                 throw new Exception('Mídia não encontrada');
             }
 
-            $path = explode('storage/', $midea->path)[1];
-            $filePath = storage_path('app/public/' . $path);
+            if ($midea->type === 'media') {
+                $path = explode('storage/', $midea->path)[1];
+                $filePath = storage_path('app/public/' . $path);
 
-            if (!file_exists($filePath)) {
-                throw new Exception('Arquivo não encontrado no servidor');
+                if (!file_exists($filePath)) {
+                    throw new Exception('Arquivo não encontrado no servidor');
+                }
+
+                return response()->download($filePath, basename($filePath))->deleteFileAfterSend(false);
             }
 
-            $fileName = basename($filePath);
+            if ($midea->type === 'folder') {
+                $zipFileName = 'midea-' . $midea_id . '-' . now()->format('Y-m-d-H-i-s') . '.zip';
+                $tempPath = storage_path('app/public/temp/' . $zipFileName);
 
-            return response()->download($filePath, $fileName)->deleteFileAfterSend(false);
+                if (!file_exists(storage_path('app/public/temp'))) {
+                    mkdir(storage_path('app/public/temp'), 0777, true);
+                }
+
+                $zip = new \ZipArchive();
+                if ($zip->open($tempPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+                    throw new Exception('Não foi possível criar o arquivo ZIP');
+                }
+
+                $this->addFolderToZip($midea, $zip, '');
+
+                $zip->close();
+
+                return response()->download($tempPath, $zipFileName)->deleteFileAfterSend(true);
+            }
+
+            throw new Exception('Tipo de mídia inválido');
         } catch (Exception $error) {
             return response()->json(['status' => false, 'error' => $error->getMessage()], 400);
+        }
+    }
+
+    private function addFolderToZip($folder, \ZipArchive $zip, $relativePath)
+    {
+        foreach ($folder->children as $child) {
+            if ($child->type === 'folder') {
+                $this->addFolderToZip($child, $zip, $relativePath . $child->description . '/');
+            } elseif ($child->type === 'media') {
+                $filePath = public_path(parse_url($child->path, PHP_URL_PATH));
+                if (file_exists($filePath)) {
+                    $zip->addFile($filePath, $relativePath . $child->description);
+                }
+            }
         }
     }
 

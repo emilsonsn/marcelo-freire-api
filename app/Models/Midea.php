@@ -52,6 +52,6 @@ class Midea extends Model
 
     public function children()
     {
-        return $this->hasMany(Midea::class, 'parent_id')->orderBy('type')->orderBy('name');
+        return $this->hasMany(Midea::class, 'parent_id')->orderBy('type')->orderBy('description');
     }
 }
