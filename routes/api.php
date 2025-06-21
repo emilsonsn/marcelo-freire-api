@@ -53,10 +53,12 @@ Route::middleware('jwt')->group(function(){
         Route::get('search', [UserController::class, 'search']);
         Route::get('cards', [UserController::class, 'cards']);
         Route::get('me', [UserController::class, 'getUser']);
-        Route::post('create', [UserController::class, 'create']);
-        Route::patch('{id}', [UserController::class, 'update']);        
-        Route::post('block/{id}', [UserController::class, 'userBlock']);
-        Route::delete('{id}', [UserController::class, 'delete']);
+        Route::group(['middleware' => AdminMiddleware::class], function() {
+            Route::post('create', [UserController::class, 'create']);
+            Route::patch('{id}', [UserController::class, 'update']);        
+            Route::post('block/{id}', [UserController::class, 'userBlock']);
+            Route::delete('{id}', [UserController::class, 'delete']);
+        });
     });
 
     Route::prefix('service')->group(function(){
@@ -72,7 +74,7 @@ Route::middleware('jwt')->group(function(){
         Route::post('create', [ClientController::class, 'create']);
         Route::patch('{id}', [ClientController::class, 'update']);
         Route::delete('{id}', [ClientController::class, 'delete']);
-    });
+    })->middleware(AdminMiddleware::class);
 
     Route::prefix('midea')->group(function(){                
         Route::get('search', [MideaController::class, 'search']);

@@ -16,15 +16,10 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $position = Auth::user()->role;
+        $currentUser = Auth::user();
 
-        if(isset($position)){
-            switch($position){
-                case 'Admin':
-                    return $next($request);
-                default:
-                    return response()->json(['error' => 'Unauthorized'], 403);
-            }
+        if($currentUser->isAdmin()){
+            return $next($request);
         }
         
         return response()->json(['error' => 'Unauthorized'], 403);

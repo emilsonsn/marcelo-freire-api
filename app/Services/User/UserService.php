@@ -185,6 +185,10 @@ class UserService
 
             if (!$user) throw new Exception('Usuário não encontrado');
 
+            $user->email = 'deleted_' . $user->email; // Anonymize email
+            $user->cpf_cnpj = 'deleted_' . $user->cpf_cnpj;
+            $user->save();
+
             $userName = $user->name;
             $user->delete();
 

@@ -5,6 +5,7 @@ namespace App\Services\Service;
 use App\Mail\ServiceDeliverMail;
 use App\Models\Service;
 use App\Models\ServiceCode;
+use Auth;
 use Exception;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -14,10 +15,16 @@ class ServiceService
     public function search($request)
     {
         try {
+            $auth = Auth::user();
             $perPage = $request->input('take', 10);
             $search_term = $request->search_term;
 
-            $services = Service::with('users', 'client')
+            $services = Service::when(! $auth->isAdmin(), function($query) use($auth){
+                    $query->whereHas('users', function ($q) use ($auth) {
+                        $q->where('user_id', $auth->id);
+                    });
+                })
+                ->with('users', 'client')
                 ->orderBy('id', 'desc');
 
             if (isset($search_term)) {
@@ -27,7 +34,6 @@ class ServiceService
                         ->orWhereHas('client', function ($query2) use ($search_term) {
                             $query2->where('name', 'LIKE', "%{$search_term}%");
                         });
-
                 });
             }
 

@@ -21,9 +21,14 @@ class DashboardService
             
             $totalClients = Client::count();
 
-            $totalServices = Service::whereMonth('created_at', Carbon::now()->month)
-                ->count();            
-            
+            $totalServices = Service::when(! auth()->user()->isAdmin(), function ($query) {
+                    $query->whereHas('users', function ($q) {
+                        $q->where('user_id', auth()->id());
+                    });
+                })
+                ->whereMonth('created_at', Carbon::now()->month)
+                ->count();
+          
             $data = [
                 'totalUsers' => $totalUsers,
                 'totalClients' => $totalClients,
